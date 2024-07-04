@@ -1,0 +1,14 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  devtools: { enabled: true },
+
+  nitro: {
+    preset: "cloudflare-pages",
+    experimental: {
+      websocket: true,
+    },
+  },
+
+  modules: ["nitro-cloudflare-dev"],
+  compatibilityDate: "2024-07-04"
+})
