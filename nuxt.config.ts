@@ -4,9 +4,6 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: "cloudflare-pages",
-    experimental: {
-      websocket: true,
-    },
   },
 
   modules: ["nitro-cloudflare-dev"],
