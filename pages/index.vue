@@ -23,6 +23,10 @@
 <script setup lang="ts">
 useHead({
     title: 'Tab vs Space',
+    meta: [{
+        name: 'description',
+        content: 'Vote for your empty space, is it tab or space',
+    }],
 })
 
 const { data, refresh } = await useFetch('/api/data')
