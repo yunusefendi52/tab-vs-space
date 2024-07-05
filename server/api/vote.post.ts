@@ -54,6 +54,7 @@ export default defineEventHandler(async event => {
         await db.insert(votingData).values({
             id: xid,
             voteType: voteType,
+            createdAt: new Date(),
         })
     } catch (e) {
         if (e instanceof LibsqlError && e.code === 'SQLITE_CONSTRAINT') {

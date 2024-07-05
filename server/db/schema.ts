@@ -5,4 +5,7 @@ export const votingData = sqliteTable('votingData', {
     voteType: integer('voteType', {
         mode: 'number',
     }).notNull(),
+    createdAt: integer('createdAt', {
+        mode: 'timestamp_ms',
+    })
 })

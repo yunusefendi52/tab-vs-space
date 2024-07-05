@@ -1,0 +1,1 @@
+ALTER TABLE `votingData` ADD `createdAt` integer;
