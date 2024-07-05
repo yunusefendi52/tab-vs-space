@@ -1,42 +1,7 @@
 import { LibsqlError } from "@libsql/client"
 import { votingData } from "../db/schema"
-import * as jose from 'jose'
 
 export default defineEventHandler(async event => {
-    const { APP_PROTECTION_KEY } = useRuntimeConfig(event)
-    const secret = jose.base64url.decode(APP_PROTECTION_KEY)
-
-    const xidEncrypted = getCookie(event, 'xid')
-    var xid = ''
-    if (!xidEncrypted) {
-        xid = generateId()
-        const jwt = await new jose.EncryptJWT({
-            'xid': xid,
-        })
-            .setProtectedHeader({
-                alg: 'dir',
-                enc: 'A128CBC-HS256',
-            })
-            .setIssuedAt()
-            .encrypt(secret)
-        setCookie(event, 'xid', jwt, {
-            sameSite: 'lax',
-            secure: true,
-            httpOnly: true,
-        })
-    } else {
-        try {
-            const { payload } = await jose.jwtDecrypt(xidEncrypted, secret)
-            xid = payload.xid as string
-        } catch (e) {
-            deleteCookie(event, 'xid')
-            throw createError({
-                message: 'Try again please',
-                statusCode: 400,
-            })
-        }
-    }
-
     const { vote } = getQuery(event)
     var voteType = undefined
     if (vote === 'tab') {
@@ -49,6 +14,14 @@ export default defineEventHandler(async event => {
             statusCode: 400,
         })
     }
+    const xid = event.context.xid
+    if (!xid) {
+        throw createError({
+            message: 'Something error, are you good?',
+            statusCode: 400,
+        })
+    }
+
     const db = event.context.drizzle
     try {
         await db.insert(votingData).values({
