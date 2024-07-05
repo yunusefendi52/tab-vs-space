@@ -13,5 +13,13 @@ export default defineNuxtConfig({
   },
 
   modules: ["nitro-cloudflare-dev"],
-  compatibilityDate: "2024-07-04"
+  compatibilityDate: "2024-07-04",
+  app: {
+    head: {
+      link: [{
+        rel: 'stylesheet',
+        href: 'https://unpkg.com/simpledotcss@2.3.1/simple.min.css'
+      }],
+    },
+  },
 })
