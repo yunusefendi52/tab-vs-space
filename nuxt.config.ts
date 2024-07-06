@@ -4,6 +4,10 @@ export default defineNuxtConfig({
     DB_URL: '',
     DB_AUTH_TOKEN: '',
     APP_PROTECTION_KEY: '',
+    TURNSTILE_SECRET_KEY: '',
+    public: {
+      TURNSTILE_SITE_KEY: '',
+    },
   },
 
   devtools: { enabled: true },
@@ -23,6 +27,9 @@ export default defineNuxtConfig({
         rel: 'stylesheet',
         href: 'https://unpkg.com/simpledotcss@2.3.1/simple.min.css'
       }],
+      script: [{
+        src: 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',
+      }]
     },
   },
 })

@@ -11,6 +11,7 @@
         <button @click="() => vote('space')">Vote for Space</button>
         <br>
         <span v-if="voteStatus === 'loading'">loading</span>
+        <div id="cf-turnstile"></div>
     </div>
 </template>
 
@@ -26,7 +27,7 @@ watchEffect(() => {
     var run = true
     const runAsync = async () => {
         while (run) {
-            await new Promise(r => setTimeout(() => r(undefined), 5000))
+            await new Promise(r => setTimeout(() => r(undefined), 15000))
             refresh()
         }
     }
@@ -36,6 +37,8 @@ watchEffect(() => {
     }
 })
 
+const { public: { TURNSTILE_SITE_KEY } } = useRuntimeConfig()
+
 const voteStatus = ref<'loading' | 'none'>('none')
 const vote = async (value: 'tab' | 'space') => {
     if (voteStatus.value === 'loading') {
@@ -43,9 +46,15 @@ const vote = async (value: 'tab' | 'space') => {
     }
     voteStatus.value = 'loading'
     try {
+        const cfToken = await getToken()
+        if (!cfToken) {
+            return
+        }
+
         await $fetch.raw('/api/vote', {
             query: {
                 vote: value,
+                token: cfToken,
             },
             method: 'post'
         })
@@ -53,5 +62,25 @@ const vote = async (value: 'tab' | 'space') => {
     } finally {
         voteStatus.value = 'none'
     }
+}
+
+const getToken = async () => {
+    return new Promise<string>(r => {
+        // @ts-ignore
+        turnstile.ready(function () {
+            // @ts-ignore
+            turnstile.render('#cf-turnstile', {
+                sitekey: TURNSTILE_SITE_KEY,
+                callback: function (token: string) {
+                    r(token)
+                },
+            });
+        });
+
+        setTimeout(() => {
+            console.error('Timeout get token')
+            r('')
+        }, 15000)
+    })
 }
 </script>

@@ -2,7 +2,32 @@ import { LibsqlError } from "@libsql/client"
 import { votingData } from "../db/schema"
 
 export default defineEventHandler(async event => {
-    const { vote } = getQuery(event)
+    const { vote, token } = getQuery(event)
+    if (!token) {
+        throw createError({
+            message: 'Welll',
+            statusCode: 200,
+        })
+    }
+
+    const { TURNSTILE_SECRET_KEY: turnstileSecretKey } = useRuntimeConfig(event)
+
+    const request = new FormData()
+    request.append('secret', turnstileSecretKey)
+    request.append('response', token?.toString())
+    const verifyResponse = await fetch(`https://challenges.cloudflare.com/turnstile/v0/siteverify`, {
+        method: 'post',
+        body: request,
+    })
+    const verifyJson = await verifyResponse.json() as any
+    if (!verifyJson?.success) {
+        console.error(verifyJson)
+        throw createError({
+            message: 'Odd request',
+            statusCode: 200,
+        })
+    }
+
     var voteType = undefined
     if (vote === 'tab') {
         voteType = 0
