@@ -23,17 +23,38 @@
 
 <script setup lang="ts">
 const { data, refresh } = await useFetch('/api/data')
+var run = ref(true)
+
+if (import.meta.client) {
+    onMounted(() => {
+        const visibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                console.log('showed')
+                run.value = true
+            } else {
+                console.log('hidden')
+                run.value = false
+            }
+        }
+        document.addEventListener('visibilitychange', visibilityChange)
+        return () => {
+            document.removeEventListener('visibilitychange', visibilityChange)
+        }
+    })
+}
 watchEffect(() => {
-    var run = true
     const runAsync = async () => {
-        while (run) {
+        while (true) {
+            if (!run.value) {
+                break
+            }
             await new Promise(r => setTimeout(() => r(undefined), 15000))
             refresh()
         }
     }
     runAsync()
     return () => {
-        run = false
+        run.value = false
     }
 })
 
