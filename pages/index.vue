@@ -22,7 +22,9 @@
 </style>
 
 <script setup lang="ts">
-const { data, refresh } = await useFetch('/api/data')
+const { data, refresh, status } = await useFetch('/api/data', {
+    server: false,
+})
 var run = ref(true)
 
 if (import.meta.client) {
@@ -48,7 +50,7 @@ watchEffect(() => {
             if (!run.value) {
                 break
             }
-            await new Promise(r => setTimeout(() => r(undefined), 15000))
+            await new Promise(r => setTimeout(() => r(undefined), 20000))
             refresh()
         }
     }
