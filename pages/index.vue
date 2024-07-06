@@ -10,7 +10,7 @@
         <br>
         <button @click="() => vote('space')">Vote for Space</button>
         <br>
-        <span v-if="voteStatus === 'loading'">loading</span>
+        <span v-if="voteStatus === 'loading'">Loading</span>
         <div id="cf-turnstile"></div>
     </div>
 </template>
@@ -87,21 +87,22 @@ const vote = async (value: 'tab' | 'space') => {
 
 const getToken = async () => {
     return new Promise<string>(r => {
+        const timeoutId = setTimeout(() => {
+            console.error('Timeout get token')
+            r('')
+        }, 20000)
+
         // @ts-ignore
         turnstile.ready(function () {
             // @ts-ignore
             turnstile.render('#cf-turnstile', {
                 sitekey: TURNSTILE_SITE_KEY,
                 callback: function (token: string) {
+                    clearTimeout(timeoutId)
                     r(token)
                 },
             });
         });
-
-        setTimeout(() => {
-            console.error('Timeout get token')
-            r('')
-        }, 15000)
     })
 }
 </script>
