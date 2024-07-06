@@ -7,7 +7,6 @@ export const runMigration = async () => {
         console.log('⏩ Migration skipped')
         return
     }
-    return
     var migrationDir = process.env.NUXT_APP_MIGRATION_DIR
     migrationDir = path.join(migrationDir ? migrationDir : process.cwd(), 'server', 'db', 'drizzle')
     console.log('🔄 Migration starting',)
